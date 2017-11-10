@@ -183,6 +183,12 @@ def delete(ctx, name, disk_id):
               required=False,
               metavar='<new-name>',
               help='New name')
+@click.option('iops',
+              '-iops',
+              '--iops',
+              required=False,
+              metavar='<iops>',
+              help='iops')
 @click.option('storage_profile',
               '-s',
               '--storage-profile',
@@ -195,16 +201,17 @@ def delete(ctx, name, disk_id):
               required=False,
               metavar='<id>',
               help='Disk id')
-def update(ctx, name, size, description, new_name, storage_profile, disk_id):
+def update(ctx, name, size, description, new_name, storage_profile, iops, disk_id):
     try:
         client = ctx.obj['client']
         vdc_href = ctx.obj['profiles'].get('vdc_href')
         vdc = VDC(client, href=vdc_href)
         task = vdc.update_disk(name,
                                size,
-                               new_name,
+                               new_name=new_name,
                                description=description,
                                storage_profile_name=storage_profile,
+                               iops=iops,
                                disk_id=disk_id)
         stdout(task, ctx)
     except Exception as e:

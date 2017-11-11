@@ -93,7 +93,7 @@ def list_disks(ctx):
         for disk in disks:
             result.append({'name': disk.get('name'),
                            'id': extract_id(disk.get('id')),
-                           'size_MB': disk.get('size'),
+                           'size_bytes': disk.get('size'),
                            'status': VCLOUD_STATUS_MAP.get(int(
                                 disk.get('status')))})
         stdout(result, ctx, show_id=True)
@@ -101,7 +101,7 @@ def list_disks(ctx):
         stderr(e, ctx)
 
 
-@disk.command(short_help='create a disk')
+@disk.command(short_help='create a disk with name and size(bytes)')
 @click.pass_context
 @click.argument('name',
                 metavar='<name>',

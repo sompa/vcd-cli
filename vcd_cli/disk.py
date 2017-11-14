@@ -47,7 +47,7 @@ def disk(ctx):
             Delete an existing independent disk named 'disk1'.
 \b
         vcd disk update disk1 15
-            Update an existing independent disk updating its size and storage profile.
+            Update an existing independent disk with new size, iops, description, name and storage profile.
     """  # NOQA
     if ctx.invoked_subcommand is not None:
         try:

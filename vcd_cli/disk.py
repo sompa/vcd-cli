@@ -184,10 +184,11 @@ def delete(ctx, name, disk_id):
               metavar='<new-name>',
               help='New name')
 @click.option('iops',
-              '-iops',
+              '-i',
               '--iops',
               required=False,
               metavar='<iops>',
+              default=None,
               help='iops')
 @click.option('storage_profile',
               '-s',

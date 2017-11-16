@@ -106,6 +106,7 @@ def info(ctx, name):
     except Exception as e:
         stderr(e, ctx)
 
+
 @vapp.command(short_help='Attach disk to VM in vApp')
 @click.pass_context
 @click.argument('vapp_name',
@@ -125,10 +126,15 @@ def attach(ctx, vapp_name, vm_name, disk_name):
         disk = vdc.get_disk(disk_name)
         vapp_resource = vdc.get_vapp(vapp_name)
         vapp = VApp(client, resource=vapp_resource)
-        task = vapp.attach_disk_to_vm(disk_href=disk.get('href'),disk_type=disk.get('type'),disk_name=disk_name,  vm_name=vm_name)
+        task = vapp.attach_disk_to_vm(
+            disk_href=disk.get('href'),
+            disk_type=disk.get('type'),
+            disk_name=disk_name,
+            vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vapp.command(short_help='Detach disk from VM in vApp')
 @click.pass_context
@@ -149,7 +155,11 @@ def detach(ctx, vapp_name, vm_name, disk_name):
         disk = vdc.get_disk(disk_name)
         vapp_resource = vdc.get_vapp(vapp_name)
         vapp = VApp(client, resource=vapp_resource)
-        task = vapp.detach_disk_from_vm(disk_href=disk.get('href'),disk_type=disk.get('type'),disk_name=disk_name,  vm_name=vm_name)
+        task = vapp.detach_disk_from_vm(
+            disk_href=disk.get('href'),
+            disk_type=disk.get('type'),
+            disk_name=disk_name,
+            vm_name=vm_name)
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)

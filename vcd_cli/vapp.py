@@ -36,7 +36,6 @@ from vcd_cli.vcd import vcd
 @click.pass_context
 def vapp(ctx):
     """Manage vApps in vCloud Director.
-
 \b
     Description
         The vapp command manages vApps.
@@ -150,6 +149,12 @@ def vapp(ctx):
             Add a VM to a vApp. Instantiate the source VM \'vm1\' that is in
             the \'template1.ova\' template in the \'catalog1\' catalog and
             place the new VM inside \'vapp1\' vApp.
+\b
+        vdc vapp connect vapp1 org-vdc-network1
+            Connects the network org-vdc-network1 to vapp1.
+\b
+        vdc vapp disconnect vapp1 org-vdc-network1
+            Disconnects the network org-vdc-network1 from vapp1.
     """
 
     if ctx.invoked_subcommand is not None:
@@ -670,6 +675,68 @@ def shutdown(ctx, name, vm_names):
         stderr(e, ctx)
 
 
+@vapp.command('connect', short_help='connect an ovdc network to a vapp')
+@click.pass_context
+@click.argument('name',
+                required=True,
+                metavar='<vapp-name>')
+@click.argument('network',
+                required=True,
+                metavar='<orgvdc-network-name>')
+@click.option(
+    '--retain-ip',
+    is_flag=True,
+    default=None,
+    help="True if the network resources such as IP/MAC of router will be "
+         "retained across deployments. False by default")
+@click.option(
+    '--is-deployed',
+    is_flag=True,
+    default=None,
+    help="True if this orgvdc network has been deployed. False by default")
+def connect(ctx, name, network, retain_ip, is_deployed):
+    try:
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(name)
+        vapp = VApp(client, resource=vapp_resource)
+        task = vapp.connect_org_vdc_network(network, retain_ip=retain_ip,
+                                            is_deployed=is_deployed)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
+@vapp.command('disconnect', short_help='disconnect an ovdc network from a '
+                                       'vapp')
+@click.pass_context
+@click.argument('name',
+                required=True,
+                metavar='<vapp-name>')
+@click.argument('network',
+                required=True,
+                metavar='<orgvdc-network-name>')
+@click.option(
+    '-y',
+    '--yes',
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt='Are you sure you want to disconnect the network?')
+def disconnect(ctx, name, network):
+    try:
+        client = ctx.obj['client']
+        vdc_href = ctx.obj['profiles'].get('vdc_href')
+        vdc = VDC(client, href=vdc_href)
+        vapp_resource = vdc.get_vapp(name)
+        vapp = VApp(client, resource=vapp_resource)
+        task = vapp.disconnect_org_vdc_network(network)
+        stdout(task, ctx)
+    except Exception as e:
+        stderr(e, ctx)
+
+
 @vapp.command(short_help='save a vApp as a template')
 @click.pass_context
 @click.argument('name', metavar='<name>', required=True)
@@ -844,7 +911,6 @@ def add_vm(ctx, name, source_vapp, source_vm, catalog, target_vm, hostname,
 @click.pass_context
 def acl(ctx):
     """Work with vapp access control list.
-
 \b
    Description
         Work with vapp access control list in the current Organization.
@@ -872,8 +938,6 @@ def acl(ctx):
 \b
         vcd vapp acl list my-vapp
             List acl of a vapp.
-
-
     """
     if ctx.invoked_subcommand is not None:
         try:

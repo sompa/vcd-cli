@@ -81,7 +81,9 @@ def info(ctx, vapp_name, vm_name):
     except Exception as e:
         stderr(e, ctx)
 
-@vm.command('modify-cpu', short_help='Modify the number of cpu/cores in the VM')
+
+@vm.command('modify-cpu',
+            short_help='Modify the number of cpu/cores in the VM')
 @click.pass_context
 @click.argument('vapp-name', metavar='<vapp-name>', required=True)
 @click.argument('vm-name', metavar='<vm-name>', required=True)
@@ -113,6 +115,7 @@ def modify_cpu(ctx, vapp_name, vm_name, cpu, cores):
         stdout(task, ctx)
     except Exception as e:
         stderr(e, ctx)
+
 
 @vm.command('modify-memory', short_help='Modify the memory of the VM')
 @click.pass_context
